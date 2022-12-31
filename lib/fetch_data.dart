@@ -11,8 +11,9 @@ class FetchData extends StatefulWidget {
 
 class _FetchDataState extends State<FetchData> {
   Query dbRef = FirebaseDatabase.instance.ref().child('Customers');
-  DatabaseReference reference =
-      FirebaseDatabase.instance.ref().child('Customers');
+  DatabaseReference reference = FirebaseDatabase.instance.ref();
+  // DatabaseReference reference =
+  //     FirebaseDatabase.instance.ref().child('Customers');
 
   Widget listItem({required Map customer}) {
     return Container(
@@ -42,7 +43,6 @@ class _FetchDataState extends State<FetchData> {
             customer['time&date'],
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
           ),
-          
         ],
       ),
     );

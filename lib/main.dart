@@ -13,6 +13,10 @@ void main() async {
   runApp(const MyApp());
 }
 
+List<String> docId = [];
+
+var count = 0;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -32,14 +36,16 @@ class FetchData extends StatefulWidget {
 }
 
 class _FetchDataState extends State<FetchData> {
-  List<String> docId = [];
+  // List<String> docId = [];
 
   Future getDocId() async {
     await FirebaseFirestore.instance
         .collection('Customers')
+        .orderBy('time&date', descending: true)
         .get()
         .then((snapshot) => snapshot.docs.forEach((document) {
               print(document.reference);
+              // print((docId.length / 2).ceil());
               docId.add(document.reference.id);
             }));
   }
@@ -48,7 +54,6 @@ class _FetchDataState extends State<FetchData> {
   void initState() {
     // TODO: implement initState
     getDocId();
-    print(docId.length);
     super.initState();
   }
 
@@ -61,7 +66,7 @@ class _FetchDataState extends State<FetchData> {
         future: getDocId(),
         builder: (context, snapshot) {
           return ListView.builder(
-              itemCount: docId.length,
+              itemCount: (docId.length / 2).ceil(),
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -69,6 +74,7 @@ class _FetchDataState extends State<FetchData> {
                       tileColor: Colors.grey,
                       title: GetUserName(
                         documentId: docId[index],
+                        srno: index,
                       )),
                 );
               });
@@ -78,184 +84,33 @@ class _FetchDataState extends State<FetchData> {
   }
 }
 
+class GetUserName extends StatelessWidget {
+  // const GetUserName({super.key});
+  final String documentId;
+  int srno = 0;
 
+  GetUserName({required this.documentId, required this.srno});
 
-
-
-// // class MyApp extends StatelessWidget {
-// //   const MyApp({Key? key}) : super(key: key);
-
-// //   // This widget is the root of your application.
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return MaterialApp(
-// //       title: 'Flutter Demo',
-// //       debugShowCheckedModeBanner: false,
-// //       theme: ThemeData(
-// //         primarySwatch: Colors.blue,
-// //       ),
-// //       home: const MyHomePage(),
-// //     );
-// //   }
-// // }
-
-// // class MyHomePage extends StatefulWidget {
-// //   const MyHomePage({Key? key}) : super(key: key);
-
-// //   @override
-// //   State<MyHomePage> createState() => _MyHomePageState();
-// // }
-
-// // class _MyHomePageState extends State<MyHomePage> {
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(
-// //         title: const Text('Flutter Firebase'),
-// //       ),
-// //       body: Center(
-// //         child: Column(
-// //           mainAxisAlignment: MainAxisAlignment.center,
-// //           crossAxisAlignment: CrossAxisAlignment.center,
-// //           children: <Widget>[
-// //             const Image(
-// //               width: 300,
-// //               height: 300,
-// //               image: NetworkImage(
-// //                   'https://seeklogo.com/images/F/firebase-logo-402F407EE0-seeklogo.com.png'),
-// //             ),
-// //             const SizedBox(
-// //               height: 30,
-// //             ),
-// //             const Text(
-// //               'Firebase Realtime Database Series in Flutter 2022',
-// //               style: TextStyle(
-// //                 fontSize: 24,
-// //                 fontWeight: FontWeight.w500,
-// //               ),
-// //               textAlign: TextAlign.center,
-// //             ),
-// //             const SizedBox(
-// //               height: 30,
-// //             ),
-
-// //             const SizedBox(
-// //               height: 30,
-// //             ),
-// //             MaterialButton(
-// //               onPressed: () {
-// //                 Navigator.push(context,
-// //                     MaterialPageRoute(builder: (context) => const FetchData()));
-// //               },
-// //               child: const Text('Fetch Data'),
-// //               color: Colors.blue,
-// //               textColor: Colors.white,
-// //               minWidth: 300,
-// //               height: 40,
-// //             ),
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
-
-// import 'package:firebase_database/firebase_database.dart';
-// import 'package:firebase_database/ui/firebase_animated_list.dart';
-// import 'package:flutter/material.dart';
-
-// import 'package:firebase_core/firebase_core.dart';
-// import 'firebase_options.dart';
-// // import 'package:cloud_firestore/cloud_firestore.dart';
-
-// // CollectionReference Customers =
-// //     FirebaseFirestore.instance.collection('Customers');
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-//   runApp(const MyApp());
-// }
-
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp( home:FetchData());
-//   }
-// }
-
-
-// class FetchData extends StatefulWidget {
-//   const FetchData({super.key});
-
-//   @override
-//   State<FetchData> createState() => _FetchDataState();
-// }
-
-// class _FetchDataState extends State<FetchData> {
-//   Query dbRef = FirebaseDatabase.instance.ref().child('Customers');
-//   DatabaseReference reference =
-//       FirebaseDatabase.instance.ref().child('Customers');
-//   Widget ListItem({required Map customers}) {
-//     return Container(
-//       margin: const EdgeInsets.all(10),
-//       padding: const EdgeInsets.all(10),
-//       height: 100,
-//       color: Colors.amber,
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             customers['name'],
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//           ),
-//           const SizedBox(
-//             height: 5,
-//           ),
-//           Text(
-//             customers['phone'],
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//           ),
-//           const SizedBox(
-//             height: 5,
-//           ),
-//           Text(
-//             customers['time&date'],
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//         home: Scaffold(
-//       appBar: AppBar(title: Text(" User Data ")),
-//       body: Container(
-//         height: double.infinity,
-//         child: FirebaseAnimatedList(
-//           query: dbRef,
-//           itemBuilder: (BuildContext context, DataSnapshot snapshot,
-//               Animation<double> animation, int index) {
-//             Map customers = snapshot.value as Map;
-//             customers['key'] = snapshot.key;
-
-//             return ListItem(customers: customers);
-//           },
-//         ),
-//       ),
-//     ));
-//   }
-// }
-
-
-
-
+  @override
+  Widget build(BuildContext context) {
+    CollectionReference customer =
+        FirebaseFirestore.instance.collection('Customers');
+    return FutureBuilder<DocumentSnapshot>(
+        future: customer.doc(documentId).get(),
+        builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            Timestamp t = data['time&date'] as Timestamp;
+            DateTime date = t.toDate();
+            // final DateTime date =
+            //     DateTime.fromMillisecondsSinceEpoch(timeNdate * 1000);
+            return Text('\n Sr. : ${srno + 1}  ' +
+                '\n Name :  ${data['name']},' +
+                '\n Phone  :  ${data['phone']},' +
+                ' \n Time : ${date} ');
+          }
+          return Text('Loading...');
+        }));
+  }
+}
