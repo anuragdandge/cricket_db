@@ -1,0 +1,84 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:flutter/material.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
+// CollectionReference Customers =
+//     FirebaseFirestore.instance.collection('Customers');
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Query dbRef = FirebaseDatabase.instance.ref().child('Customers');
+  DatabaseReference reference =
+      FirebaseDatabase.instance.ref().child('Customers');
+  Widget ListItem({required Map customers}) {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      height: 100,
+      color: Colors.amber,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            customers['name'],
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            customers['phone'],
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            customers['time&date'],
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+      appBar: AppBar(title: Text(" User Data ")),
+      body: Container(
+        height: double.infinity,
+        child: FirebaseAnimatedList(
+          query: dbRef,
+          itemBuilder: (BuildContext context, DataSnapshot snapshot,
+              Animation<double> animation, int index) {
+            Map customers = snapshot.value as Map;
+            customers['key'] = snapshot.key;
+
+            return ListItem(customers: customers);
+          },
+        ),
+      ),
+    ));
+  }
+}
